@@ -7,11 +7,20 @@ import 'service/auth/authGate.dart';
 import 'service/auth/authServices.dart';
 
 void main() async {
+  // Ensure widgets binding is initialized before Firebase is initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Start the application
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => AuthServices(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthServices>(
+          create: (context) => AuthServices(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );
@@ -20,17 +29,16 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
+      title: 'Chat App',
+      debugShowCheckedModeBanner: false, // Hide debug banner
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        useMaterial3: true, // Use Material 3 design language
       ),
-      home: AuthGate(),
+      home: const AuthGate(), // Start with the AuthGate to manage auth flow
     );
   }
 }

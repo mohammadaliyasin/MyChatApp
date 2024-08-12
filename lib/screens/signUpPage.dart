@@ -1,5 +1,4 @@
 import 'package:chat_app/Components/myButton.dart';
-import 'package:chat_app/Screens/loginPage.dart';
 import 'package:chat_app/components/myTextField.dart';
 import 'package:chat_app/service/auth/authServices.dart';
 import 'package:flutter/material.dart';
@@ -14,37 +13,53 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  //textController
-  final confirmPassword = TextEditingController();
-  final email = TextEditingController();
-  final password = TextEditingController();
+  // TextEditingControllers
+  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  //signUp user
-  void signUp() async{
-  if(password.text != confirmPassword.text){
-          ScaffoldMessenger.of(context).showSnackBar(
+  // Sign up user
+  Future<void> signUp() async {
+    // Retrieve values from controllers
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    // Input validation
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Password don\'t match!',
-          ),
+          content: const Text('Please fill in all fields'),
         ),
       );
-   //get authservice
-   final authService = Provider.of<AuthServices>(context, listen: false);
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Passwords don\'t match!'),
+        ),
+      );
+      return;
+    }
+
+    // Get auth service
+    final authService = Provider.of<AuthServices>(context, listen: false);
 
     try {
-      await authService.signUpWithEmailAndPassword(email.text, password.text);
+      await authService.signUpWithEmailAndPassword(email, password);
+      // Navigate to home or another page if signup is successful
+      Navigator.pushReplacementNamed(context, '/home'); // Adjust route name as needed
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            e.toString(),
-          ),
+          content: Text('Error: ${e.toString()}'),
         ),
       );
     }
   }
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,62 +71,51 @@ class _SignUpPageState extends State<SignUpPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  //logo
+                  const SizedBox(height: 50),
+                  // Logo
                   const Icon(
                     Icons.message_outlined,
                     size: 80,
                     color: Color(0xff023e8a),
                   ),
-
-                  const SizedBox(
-                    height: 25,
-                  ),
-                  //message
+                  const SizedBox(height: 25),
+                  // Message
                   const Text(
-                    'Let\'s create a account for you!',
+                    'Let\'s create an account for you!',
                     style: TextStyle(
                       fontSize: 16,
                       color: Color(0xff023e8a),
                     ),
                   ),
-                  const SizedBox(
-                    height: 25,
-                  ),
-
-                  //email textfield
+                  const SizedBox(height: 25),
+                  // Email TextField
                   MyTextField(
-                      controller: email, hintText: 'Email', obscureText: false),
-                  const SizedBox(
-                    height: 10,
+                    controller: emailController,
+                    hintText: 'Email',
+                    obscureText: false,
                   ),
-                  //password textfield
+                  const SizedBox(height: 10),
+                  // Password TextField
                   MyTextField(
-                      controller: password,
-                      hintText: 'Password',
-                      obscureText: true),
-                  const SizedBox(
-                    height: 10,
+                    controller: passwordController,
+                    hintText: 'Password',
+                    obscureText: true,
                   ),
-                  //Confirm password textfield
+                  const SizedBox(height: 10),
+                  // Confirm Password TextField
                   MyTextField(
-                      controller: confirmPassword,
-                      hintText: 'Confirm Password',
-                      obscureText: false),
-
-                  const SizedBox(
-                    height: 25,
+                    controller: confirmPasswordController,
+                    hintText: 'Confirm Password',
+                    obscureText: true,
                   ),
-
-                  //Button
-                  const MyButton(text: 'Sign Up'),
-
-                  const SizedBox(
-                    height: 25,
+                  const SizedBox(height: 25),
+                  // Sign Up Button
+                  MyButton(
+                    text: 'Sign Up',
+                    onTap: signUp,
                   ),
-
+                  const SizedBox(height: 25),
+                  // Already a member?
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -119,16 +123,15 @@ class _SignUpPageState extends State<SignUpPage> {
                         'Already a member?',
                         style: TextStyle(color: Color(0xff023e8a)),
                       ),
-                      const SizedBox(
-                        width: 4,
-                      ),
+                      const SizedBox(width: 4),
                       GestureDetector(
                         onTap: widget.onTap,
                         child: const Text(
                           'Login Now',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xff023e8a)),
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff023e8a),
+                          ),
                         ),
                       ),
                     ],

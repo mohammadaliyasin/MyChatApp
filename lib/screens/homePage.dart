@@ -4,31 +4,40 @@ import 'package:provider/provider.dart';
 import '../service/auth/authServices.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  //sign out user
-  void signOut() {
-    //get auth service
-    final authService = Provider.of<AuthServices>(context, listen: false);
-    authService.signOut();
+  // Sign out user
+  Future<void> signOut() async {
+    try {
+      final authService = Provider.of<AuthServices>(context, listen: false);
+      await authService.signOut();
+    } catch (e) {
+      // Handle any errors that occur during sign out
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing out: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("HomePage"),
+        title: const Text("HomePage"),
         actions: [
           IconButton(
             onPressed: signOut,
-            icon: Icon(Icons.logout_outlined),
+            icon: const Icon(Icons.logout_outlined),
           ),
         ],
+      ),
+      body: const Center(
+        child: Text('Welcome to the Home Page!'),
       ),
     );
   }

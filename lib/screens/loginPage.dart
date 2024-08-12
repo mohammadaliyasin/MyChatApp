@@ -19,12 +19,26 @@ class _LoginPageState extends State<LoginPage> {
   final password = TextEditingController();
 
   void signin() async {
-    //get auth services
+    // Validate input fields
+    if (email.text.isEmpty || password.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please fill in both fields'),
+        ),
+      );
+      return;
+    }
+
+    // Get auth services
     final authService = Provider.of<AuthServices>(context, listen: false);
 
     try {
+      // Sign in with email and password
+      print('Attempting to sign in with email: ${email.text}');
       await authService.signInWithEmailAndPassword(email.text, password.text);
+      print('Sign in successful');
     } catch (e) {
+      print('Sign in error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -49,17 +63,16 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(
                     height: 50,
                   ),
-                  //logo
+                  // logo
                   const Icon(
                     Icons.message_outlined,
                     size: 80,
                     color: Color(0xff023e8a),
                   ),
-
                   const SizedBox(
                     height: 25,
                   ),
-                  //message
+                  // message
                   const Text(
                     'Welcome back you\'ve missed!',
                     style: TextStyle(
@@ -70,13 +83,13 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(
                     height: 25,
                   ),
-                  //email textfield
+                  // email textfield
                   MyTextField(
                       controller: email, hintText: 'Email', obscureText: false),
                   const SizedBox(
                     height: 10,
                   ),
-                  //password textfield
+                  // password textfield
                   MyTextField(
                       controller: password,
                       hintText: 'Password',
@@ -84,14 +97,14 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(
                     height: 25,
                   ),
-
-                  //Button
-                  const MyButton(text: 'Sign in'),
-
+                  // Button
+                  MyButton(
+                    text: 'Sign in',
+                    onTap: signin,
+                  ),
                   const SizedBox(
                     height: 25,
                   ),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -104,11 +117,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       GestureDetector(
                         onTap: widget.onTap,
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => const SignUpPage()),
-                        // ),
                         child: const Text(
                           'Register Now',
                           style: TextStyle(
